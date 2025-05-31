@@ -30,15 +30,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.navigation.compose.rememberNavController
 import com.sunaulo.sunauloapp.Screen
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.ui.input.pointer.pointerInteropFilter
-import android.view.MotionEvent
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 
 data class Chat(val id: Int, val name: String, val lastMessage: String, val time: String, val imageUrl: Int)
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatListScreen(navController: NavHostController) {
     var selectedChats by remember { mutableStateOf(setOf<Int>()) }
@@ -82,11 +79,11 @@ fun ChatListScreen(navController: NavHostController) {
                     Icon(Icons.Default.Delete, contentDescription = "Delete")
                 }
             } else {
-                IconButton(onClick = { /* TODO: Handle back navigation */ }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Chats", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            IconButton(onClick = { /* TODO: Handle back navigation */ }) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Chats", fontSize = 20.sp, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -108,20 +105,21 @@ fun ChatListScreen(navController: NavHostController) {
                         }
                     },
                     onChatLongClick = {
-                        selectedChats = selectedChats + chat.id
+                        if (selectedChats.isEmpty()) {
+                            selectedChats = setOf(chat.id)
+                        } else {
+                            selectedChats = selectedChats + chat.id
+                        }
                     },
                     onOptionsClick = {
-                        if (selectedChats.isEmpty()) {
-                            selectedChatForOptions = chat
-                            showOptionsMenu = true
-                        }
+                        selectedChatForOptions = chat
+                        showOptionsMenu = true
                     }
                 )
             }
         }
     }
 
-    // Options Menu
     if (showOptionsMenu && selectedChatForOptions != null) {
         AlertDialog(
             onDismissRequest = { showOptionsMenu = false },
@@ -170,6 +168,7 @@ fun ChatListScreen(navController: NavHostController) {
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 fun ChatListItem(
     chat: Chat,
     isSelected: Boolean,
@@ -177,41 +176,17 @@ fun ChatListItem(
     onChatLongClick: () -> Unit,
     onOptionsClick: () -> Unit
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val viewConfiguration = LocalViewConfiguration.current
-    val longPressTimeout = viewConfiguration.longPressTimeoutMillis
-    val scope = rememberCoroutineScope()
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(if (isSelected) Color(0xFFE3F2FD) else Color.Transparent)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) {
-                if (isPressed) {
-                    scope.launch {
-                        delay(longPressTimeout)
-                        onChatLongClick()
-                    }
-                } else {
-                    onChatClick()
-                }
-            }
+            .combinedClickable(
+                onClick = onChatClick,
+                onLongClick = onChatLongClick
+            )
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (isSelected) {
-            Icon(
-                Icons.Default.CheckCircle,
-                contentDescription = "Selected",
-                tint = Color(0xFF1976D2),
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-        }
         
         // Profile Image
         Image(

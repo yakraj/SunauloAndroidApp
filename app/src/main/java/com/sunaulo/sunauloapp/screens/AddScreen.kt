@@ -72,7 +72,7 @@ fun AddScreen(navController: NavController) {
     val scrollState = rememberScrollState()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)

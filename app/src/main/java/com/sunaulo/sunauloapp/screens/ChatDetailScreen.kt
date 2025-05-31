@@ -26,18 +26,16 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.platform.LocalViewConfiguration
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 import androidx.compose.ui.window.PopupProperties
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 
 data class Message(val id: Int, val text: String, val time: String, val isUser: Boolean)
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatDetailScreen(chatId: Int?) {
     var selectedMessages by remember { mutableStateOf(setOf<Int>()) }
-    var showMessageOptions by remember { mutableStateOf(false) }
-    var selectedMessageForOptions by remember { mutableStateOf<Message?>(null) }
     var showTopBarOptions by remember { mutableStateOf(false) }
     var textState by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -151,15 +149,15 @@ fun ChatDetailScreen(chatId: Int?) {
                             } else {
                                 selectedMessages + message.id
                             }
+                        } else {
+                            // TODO: Handle default single tap behavior (e.g., show message details), currently does nothing
                         }
                     },
                     onMessageLongClick = {
-                        selectedMessages = selectedMessages + message.id
-                    },
-                    onMessageOptionsClick = {
                         if (selectedMessages.isEmpty()) {
-                            selectedMessageForOptions = message
-                            showMessageOptions = true
+                            selectedMessages = setOf(message.id)
+                        } else {
+                            selectedMessages = selectedMessages + message.id
                         }
                     }
                 )
@@ -199,106 +197,33 @@ fun ChatDetailScreen(chatId: Int?) {
             }
         }
     }
-
-    // Message Options Menu
-    if (showMessageOptions && selectedMessageForOptions != null) {
-        AlertDialog(
-            onDismissRequest = { showMessageOptions = false },
-            title = { Text("Message Options") },
-            text = {
-                Column {
-                    TextButton(
-                        onClick = {
-                            showMessageOptions = false
-                            // TODO: Forward message
-                        }
-                    ) {
-                        Icon(Icons.Default.Share, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Forward")
-                    }
-                    TextButton(
-                        onClick = {
-                            showMessageOptions = false
-                            // TODO: Copy message
-                        }
-                    ) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Copy")
-                    }
-                    TextButton(
-                        onClick = {
-                            showMessageOptions = false
-                            // TODO: Delete message
-                        }
-                    ) {
-                        Icon(Icons.Default.Delete, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Delete")
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showMessageOptions = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 fun MessageItem(
     message: Message,
     isSelected: Boolean,
     onMessageClick: () -> Unit,
-    onMessageLongClick: () -> Unit,
-    onMessageOptionsClick: () -> Unit
+    onMessageLongClick: () -> Unit
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val viewConfiguration = LocalViewConfiguration.current
-    val longPressTimeout = viewConfiguration.longPressTimeoutMillis
-    val scope = rememberCoroutineScope()
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(color = if (isSelected) Color(0xFFE0F7FA) else Color.Transparent)
             .padding(vertical = 4.dp),
         horizontalArrangement = if (message.isUser) Arrangement.End else Arrangement.Start
     ) {
-        if (isSelected) {
-            Icon(
-                Icons.Default.CheckCircle,
-                contentDescription = "Selected",
-                tint = Color(0xFF1976D2),
-                modifier = Modifier
-                    .size(24.dp)
-                    .align(Alignment.CenterVertically)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-        }
-        
         Box(
             modifier = Modifier
                 .background(
                     color = if (message.isUser) Color(0xFFE0E0E0) else Color(0xFF6200EE),
                     shape = RoundedCornerShape(8.dp)
                 )
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
-                    if (isPressed) {
-                        scope.launch {
-                            delay(longPressTimeout)
-                            onMessageLongClick()
-                        }
-                    } else {
-                        onMessageClick()
-                    }
-                }
+                .combinedClickable(
+                    onClick = onMessageClick,
+                    onLongClick = onMessageLongClick
+                )
                 .padding(8.dp)
         ) {
             Column {
@@ -308,20 +233,6 @@ fun MessageItem(
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(message.time, fontSize = 10.sp, color = if (message.isUser) Color.Gray else Color(0xFFEEEEEE))
-                    if (!isSelected) {
-                        Spacer(modifier = Modifier.width(4.dp))
-                        IconButton(
-                            onClick = onMessageOptionsClick,
-                            modifier = Modifier.size(16.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.MoreVert,
-                                contentDescription = "Options",
-                                tint = if (message.isUser) Color.Gray else Color(0xFFEEEEEE),
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                    }
                 }
             }
         }
