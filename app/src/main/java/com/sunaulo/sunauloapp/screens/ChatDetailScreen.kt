@@ -75,25 +75,25 @@ fun ChatDetailScreen(chatId: Int?) {
                     Icon(Icons.Default.Delete, contentDescription = "Delete")
                 }
             } else {
-                IconButton(onClick = { /* TODO: Handle back navigation */ }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                }
+            IconButton(onClick = { /* TODO: Handle back navigation */ }) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            // Profile Image and Name
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.Gray)
+                ) { /* Placeholder for profile image */ }
                 Spacer(modifier = Modifier.width(8.dp))
-                // Profile Image and Name
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(Color.Gray)
-                    ) { /* Placeholder for profile image */ }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Jaya thapa", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                }
-                Spacer(modifier = Modifier.weight(1f))
+                Text("Jaya thapa", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.weight(1f))
                 Box {
                     IconButton(onClick = { showTopBarOptions = true }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "Options")
+                Icon(Icons.Default.MoreVert, contentDescription = "Options")
                     }
                     DropdownMenu(
                         expanded = showTopBarOptions,
@@ -232,7 +232,7 @@ fun MessageItem(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End
                 ) {
-                    Text(message.time, fontSize = 10.sp, color = if (message.isUser) Color.Gray else Color(0xFFEEEEEE))
+                Text(message.time, fontSize = 10.sp, color = if (message.isUser) Color.Gray else Color(0xFFEEEEEE))
                 }
             }
         }

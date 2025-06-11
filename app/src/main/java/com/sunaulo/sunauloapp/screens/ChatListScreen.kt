@@ -135,7 +135,7 @@ fun ChatListScreen(navController: NavHostController) {
                         Icon(Icons.Default.Info, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("View Info")
-                    }
+            }
                     TextButton(
                         onClick = {
                             showOptionsMenu = false
@@ -210,7 +210,7 @@ fun ChatListItem(
             Text(chat.time, fontSize = 12.sp, color = Color.Gray)
             if (!isSelected) {
                 IconButton(onClick = onOptionsClick) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "Options")
+                Icon(Icons.Default.MoreVert, contentDescription = "Options")
                 }
             }
         }

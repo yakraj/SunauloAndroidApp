@@ -25,6 +25,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sunaulo.sunauloapp.R // Assuming you have drawable resources
 import androidx.compose.foundation.clickable
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material.icons.filled.MarkChatUnread
 
 @Composable
 fun PostCard(
@@ -40,9 +47,11 @@ fun PostCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .border(1.dp, Color.Gray) // Optional: Add a border to visualize the card
-            .padding(8.dp)
+    ) {Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+            .padding(vertical = 5.dp)
     ) {
         // Header (Profile Pic, Name, Time/Price, See More)
         Row(
@@ -68,7 +77,7 @@ fun PostCard(
             }
             Column(horizontalAlignment = Alignment.End) {
                  Text("7 days ago", fontSize = 12.sp, color = Color.Gray)
-                 Text("see more...", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+
             }
         }
 
@@ -79,6 +88,9 @@ fun PostCard(
                 .padding(bottom = 8.dp)
                 .clickable { onDescriptionClick() }
         )
+        Row(modifier = Modifier.fillMaxWidth().offset(y = -15.dp), horizontalArrangement = Arrangement.End) {
+            Text("see more...", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+        }
 
         // Post Image
         Image(
@@ -91,40 +103,126 @@ fun PostCard(
                 .clickable { onImageClick() },
             contentScale = ContentScale.Crop
         )
+        Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween,) {
+            Text(likesCount + " likes", fontSize = 12.sp, color = Color.Gray)
+            Text(viewsCount + " views", fontSize = 12.sp, color = Color.Gray)
 
+        }
         // Footer (Likes, Chat, Share, Views)
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.FavoriteBorder, contentDescription = "Like")
-                Text(likesCount, modifier = Modifier.padding(start = 4.dp))
-                Spacer(modifier = Modifier.width(16.dp))
-                Icon(Icons.Outlined.ChatBubbleOutline, contentDescription = "Chat")
-                Text("Chat", modifier = Modifier.padding(start = 4.dp))
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Send, contentDescription = "Share")
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(viewsCount + " views", fontSize = 12.sp, color = Color.Gray)
-            }
+            Row(modifier = Modifier
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically) {
+
+                Row {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp) // Set the size of the circular area
+                                .clip(CircleShape) // Clip the Box to a circular shape
+                                .clickable(
+                                    onClick = { /* TODO: Handle click action */ },
+                                    indication = rememberRipple(bounded = true), // Circular ripple
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.FavoriteBorder,
+                                contentDescription = "Like",
+                                tint = Color.Gray
+                            )
+
+                        }
+                        Text("Like", fontSize = 12.sp, color = Color.Gray)
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally)  {
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp) // Set the size of the circular area
+                                .clip(CircleShape) // Clip the Box to a circular shape
+                                .clickable(
+                                    onClick = { /* TODO: Handle click action */ },
+                                    indication = rememberRipple(bounded = true), // Circular ripple
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MarkChatUnread,
+                                contentDescription = "Like",
+                                tint = Color.Gray
+                            )
+
+                        }
+                        Text("Chat", fontSize = 12.sp, color = Color.Gray)
+                    }
+
+
+               }
+                Column {
+                    Box(
+                        modifier = Modifier
+                            .size(30.dp) // Set the size of the circular area
+                            .clip(CircleShape) // Clip the Box to a circular shape
+                            .clickable(
+                                onClick = { /* TODO: Handle click action */ },
+                                indication = rememberRipple(bounded = true), // Circular ripple
+                                interactionSource = remember { MutableInteractionSource() }
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Send,
+                            contentDescription = "Like",
+                            tint = Color.Gray
+                        )
+
+                    }
+                    Text("Share", fontSize = 12.sp, color = Color.Gray)
+                }
+
+                 }
+
+
         }
+
+
     }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(5.dp)
+//            .alpha(0.5f)
+                .background(Color.Gray)
+        )
+    }
+
+
 }
 
-// @Preview(showBackground = true)
-// @Composable
-// fun PreviewPostCard() {
-//     PostCard(
-//         userName = "Jaya thapa",
-//         price = "500",
-//         description = "important conversation about the life is going why so long. this is going to be very frustrating",
-//         postImage = painterResource(id = R.drawable.placeholder_image), // Replace with a placeholder drawable resource
-//         likesCount = "287.698",
-//         viewsCount = "500"
-//     )
-// } 
+ @Preview(showBackground = true)
+ @Composable
+ fun PreviewPostCard() {
+     PostCard(
+         userName = "Jaya thapa",
+         price = "500",
+         description = "important conversation about the life is going why so long. this is going to be very frustrating",
+         postImage = painterResource(id = R.drawable.my_post_image), // Replace with a placeholder drawable resource
+         likesCount = "287.698",
+         viewsCount = "500",
+         onImageClick = { /* TODO: Handle image click */ },
+         onDescriptionClick = { /* TODO: Handle description click */ }
+
+
+     )
+ }

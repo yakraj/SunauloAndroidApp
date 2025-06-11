@@ -24,7 +24,7 @@ fun HomeScreen(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(16.dp),
+            .padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Loop 10 times to display PostCard
@@ -44,4 +44,4 @@ fun HomeScreen(navController: NavHostController) {
             //Spacer(modifier = Modifier.height(8.dp))
         }
     }
-} 
+}
